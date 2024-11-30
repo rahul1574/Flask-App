@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download YouTube Video</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 15px;
+        }
+        #message {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Download YouTube Video and Audio</h1>
+    <form id="youtubeForm">
+        <label for="youtube_link">Enter YouTube Link:</label><br>
+        <input type="text" id="youtube_link" name="youtube_link" required><br><br>
+        <label for="quality">Select Quality:</label><br>
+        <select id="quality" name="quality" required>
+            <option value="2160p">2160p</option>
+            <option value="1440p">1440p</option>
+            <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
+            <option value="480p">480p</option>
+            <option value="360p">360p</option>
+            <option value="240p">240p</option>
+            <option value="144p">144p</option>
+        </select><br><br>
+        <button type="submit">Download</button>
+    </form>
+    <div id="message"></div>
+
+    <script>
+        document.getElementById('youtubeForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            
+            const youtubeLink = document.getElementById('youtube_link').value;
+            const quality = document.getElementById('quality').value;
+            const messageDiv = document.getElementById('message');
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        link: youtubeLink,
+                        quality: quality
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const result = await response.json();
+                messageDiv.innerHTML = result.message;
+            } catch (error) {
+                messageDiv.innerHTML = 'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
